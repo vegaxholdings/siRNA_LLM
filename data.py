@@ -98,8 +98,11 @@ def bin_label(label, bin_size=10):
     return int(label // bin_size)
 
 
-def calculate_accuracy(predictions, ground_truth, bin_size=10):
-    """Calculate accuracy based on binned categories"""
+def calculate_accuracy(predictions, ground_truth, max_diff=10):
+    """Calculate accuracy based on absolute difference threshold
+    
+    A prediction is considered correct if |prediction - ground_truth| < max_diff
+    """
     if len(predictions) != len(ground_truth):
         raise ValueError(f"Length mismatch: predictions ({len(predictions)}) != ground_truth ({len(ground_truth)})")
     
@@ -115,8 +118,6 @@ def calculate_accuracy(predictions, ground_truth, bin_size=10):
     if len(cleaned_predictions) == 0:
         return 0.0
     
-    binned_preds = [bin_label(p, bin_size) for p in cleaned_predictions]
-    binned_truth = [bin_label(t, bin_size) for t in cleaned_ground_truth]
-    
-    correct = sum(p == t for p, t in zip(binned_preds, binned_truth))
+    # Count predictions with difference less than max_diff
+    correct = sum(abs(p - t) < max_diff for p, t in zip(cleaned_predictions, cleaned_ground_truth))
     return correct / len(cleaned_ground_truth)

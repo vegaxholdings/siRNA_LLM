@@ -49,8 +49,10 @@ def generate_predictions(model, tokenizer, dataset, max_new_tokens=64, batch_siz
             generated_ids = model.generate(
                 **inputs,
                 max_new_tokens=max_new_tokens,
-                do_sample=False,
-                temperature=0.1,
+                # 샘플링 관련 설정 수정
+                do_sample=True,       # 수정: False에서 True로 변경
+                temperature=0.7,      # 수정: 적절한 temperature 값으로 조정
+                top_p=0.9,            # 수정: 명시적으로 top_p 설정
                 num_beams=1,
                 eos_token_id=tokenizer.eos_token_id,
                 pad_token_id=tokenizer.pad_token_id,

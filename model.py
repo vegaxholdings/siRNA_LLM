@@ -14,7 +14,8 @@ class SiRNAModel:
         # Load tokenizer
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name_or_path)
         self.tokenizer.pad_token = self.tokenizer.eos_token
-        self.tokenizer.padding_side = "right"
+        # 왼쪽 패딩 설정 추가 (디코더 모델에 적합)
+        self.tokenizer.padding_side = "left"  # 수정: right에서 left로 변경
         
         # Quantization config
         if use_4bit:
@@ -117,6 +118,9 @@ class SiRNAModel:
     def load_trained_model(self, model_path, device_map="auto"):
         # Load tokenizer and model from saved path
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+        # 왼쪽 패딩 설정 추가
+        self.tokenizer.padding_side = "left"  # 추가된 코드
+        
         self.model = AutoModelForCausalLM.from_pretrained(
             model_path,
             device_map=device_map,

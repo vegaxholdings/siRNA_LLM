@@ -2,6 +2,7 @@ import argparse
 import os
 from train import train_model
 from evaluate import evaluate_model
+from chat import chat_with_model
 from utils import set_seed
 
 def main():
@@ -31,10 +32,17 @@ def main():
                             help="학습된 모델 경로")
     eval_parser.add_argument("--data_path", type=str, default="data/test/validation.jsonl", 
                             help="평가 데이터 경로")
-    eval_parser.add_argument("--bin_size", type=int, default=10, 
-                            help="카테고리화할 빈 크기")
+    eval_parser.add_argument("--max_diff", type=float, default=10, 
+                            help="올바른 예측으로 간주하는 최대 차이값")
     eval_parser.add_argument("--seed", type=int, default=42, 
                             help="랜덤 시드")
+    
+    # Chat command
+    chat_parser = subparsers.add_parser("chat", help="모델과 대화")
+    chat_parser.add_argument("--model_path", type=str, required=True, 
+                           help="학습된 모델 경로")
+    chat_parser.add_argument("--seed", type=int, default=42, 
+                           help="랜덤 시드")
     
     args = parser.parse_args()
     
@@ -56,8 +64,11 @@ def main():
         evaluate_model(
             args.model_path,
             args.data_path,
-            bin_size=args.bin_size
+            max_diff=args.max_diff
         )
+    elif args.command == "chat":
+        print("모델과 대화를 시작합니다...")
+        chat_with_model(args.model_path)
     else:
         parser.print_help()
 
