@@ -11,7 +11,7 @@ def train_model(train_data_path, output_dir, batch_size=4, gradient_accumulation
     print(f"Loading model...")
     # Initialize model
     sirna_model = SiRNAModel()
-    tokenizer = sirna_model.load_model(use_4bit=True)
+    model, tokenizer = sirna_model.load_model(use_4bit=True)
     sirna_model.prepare_for_training(r=r, lora_alpha=lora_alpha, lora_dropout=lora_dropout)
     
     print(f"Loading training data from {train_data_path}...")

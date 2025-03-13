@@ -97,10 +97,10 @@ def bin_label(label, bin_size=10):
     return int(label // bin_size)
 
 
-def calculate_accuracy(predictions, ground_truth, max_diff=10):
-    """Calculate accuracy based on absolute difference threshold
+def calculate_mae(predictions, ground_truth):
+    """Calculate Mean Absolute Error (MAE)
     
-    A prediction is considered correct if |prediction - ground_truth| < max_diff
+    MAE = (1/n) * sum(|prediction - ground_truth|)
     """
     if len(predictions) != len(ground_truth):
         raise ValueError(f"Length mismatch: predictions ({len(predictions)}) != ground_truth ({len(ground_truth)})")
@@ -115,8 +115,8 @@ def calculate_accuracy(predictions, ground_truth, max_diff=10):
             cleaned_ground_truth.append(t)
     
     if len(cleaned_predictions) == 0:
-        return 0.0
+        return float('inf')  # Return infinity if no valid predictions
     
-    # Count predictions with difference less than max_diff
-    correct = sum(abs(p - t) < max_diff for p, t in zip(cleaned_predictions, cleaned_ground_truth))
-    return correct / len(cleaned_ground_truth)
+    # Calculate mean absolute error
+    mae = sum(abs(p - t) for p, t in zip(cleaned_predictions, cleaned_ground_truth)) / len(cleaned_predictions)
+    return mae

@@ -3,11 +3,11 @@ import json
 import argparse
 
 from model import SiRNAModel
-from data import SiRNADataset, calculate_accuracy
+from data import SiRNADataset
 from utils import set_seed, generate_predictions
 
-def evaluate_model(model_path, data_path, max_diff=10):
-    """Evaluate the fine-tuned model on validation data"""
+def evaluate_model(model_path, data_path):
+    """Evaluate the fine-tuned model on validation data using MAE"""
     print(f"Loading model from {model_path}...")
     # Initialize model
     sirna_model = SiRNAModel()
@@ -21,19 +21,21 @@ def evaluate_model(model_path, data_path, max_diff=10):
     # Generate predictions
     predictions = generate_predictions(model, tokenizer, val_dataset)
     
-    # Calculate accuracy
+    # Calculate metrics
     true_labels = val_dataset.get_labels()
-    accuracy = calculate_accuracy(predictions, true_labels, max_diff=max_diff)
     
-    print(f"Accuracy (max difference {max_diff}): {accuracy:.4f}")
+    # Calculate MAE (primary metric)
+    from data import calculate_mae
+    mae = calculate_mae(predictions, true_labels)
+    
+    print(f"Mean Absolute Error (MAE): {mae:.4f}")
     
     # Save detailed results for analysis
     results = {
-        "accuracy": accuracy,
+        "mae": mae,
         "predictions": [float(p) if p is not None else None for p in predictions],
         "true_labels": [float(l) for l in true_labels],
-        "differences": [abs(float(p) - float(l)) if p is not None else None for p, l in zip(predictions, true_labels)],
-        "correct_predictions": [abs(float(p) - float(l)) < max_diff if p is not None else False for p, l in zip(predictions, true_labels)]
+        "absolute_errors": [abs(float(p) - float(l)) if p is not None else None for p, l in zip(predictions, true_labels)]
     }
     
     results_path = os.path.join(os.path.dirname(model_path), "evaluation_results.json")
@@ -42,7 +44,7 @@ def evaluate_model(model_path, data_path, max_diff=10):
     
     print(f"Detailed results saved to {results_path}")
     
-    return accuracy
+    return mae
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate the siRNA model")

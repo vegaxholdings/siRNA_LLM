@@ -32,8 +32,6 @@ def main():
                             help="학습된 모델 경로")
     eval_parser.add_argument("--data_path", type=str, default="data/test/validation.jsonl", 
                             help="평가 데이터 경로")
-    eval_parser.add_argument("--max_diff", type=float, default=10, 
-                            help="올바른 예측으로 간주하는 최대 차이값")
     eval_parser.add_argument("--seed", type=int, default=42, 
                             help="랜덤 시드")
     
@@ -61,11 +59,11 @@ def main():
         )
     elif args.command == "evaluate":
         print("평가를 시작합니다...")
-        evaluate_model(
+        mae = evaluate_model(
             args.model_path,
-            args.data_path,
-            max_diff=args.max_diff
+            args.data_path
         )
+        print(f"최종 MAE: {mae:.4f} (낮을수록 좋음)")
     elif args.command == "chat":
         print("모델과 대화를 시작합니다...")
         chat_with_model(args.model_path)
