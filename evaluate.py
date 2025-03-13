@@ -1,10 +1,10 @@
 import os
+import json
 import argparse
-import torch
+
 from model import SiRNAModel
 from data import SiRNADataset, calculate_accuracy
 from utils import set_seed, generate_predictions
-import json
 
 def evaluate_model(model_path, data_path, max_diff=10):
     """Evaluate the fine-tuned model on validation data"""

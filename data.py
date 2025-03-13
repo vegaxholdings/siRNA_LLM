@@ -1,8 +1,7 @@
-import json
-import torch
-from torch.utils.data import Dataset
 import re
-import numpy as np
+import json
+
+from torch.utils.data import Dataset
 
 class SiRNADataset(Dataset):
     def __init__(self, file_path, tokenizer=None):

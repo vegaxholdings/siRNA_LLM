@@ -1,5 +1,5 @@
 import argparse
-import os
+
 from train import train_model
 from evaluate import evaluate_model
 from chat import chat_with_model

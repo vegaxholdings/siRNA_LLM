@@ -1,8 +1,9 @@
 import os
+
 import torch
+from transformers import TrainingArguments, Trainer
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-from transformers import TrainingArguments, Trainer
 
 class SiRNAModel:
     def __init__(self, model_name_or_path="meta-llama/Meta-Llama-3.1-8B"):
@@ -14,20 +15,17 @@ class SiRNAModel:
         # Load tokenizer
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name_or_path)
         self.tokenizer.pad_token = self.tokenizer.eos_token
-        # 왼쪽 패딩 설정 추가 (디코더 모델에 적합)
-        self.tokenizer.padding_side = "left"  # 수정: right에서 left로 변경
+        self.tokenizer.padding_side = "left" # 왼쪽 패딩 설정 추가 (디코더 모델에 적합)
         
         # Quantization config
+        quant_config = None
         if use_4bit:
-            compute_dtype = getattr(torch, "float16")
             quant_config = BitsAndBytesConfig(
                 load_in_4bit=True,
                 bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=compute_dtype,
+                bnb_4bit_compute_dtype=torch.float16,
                 bnb_4bit_use_double_quant=False,
             )
-        else:
-            quant_config = None
         
         # Load model
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -118,8 +116,7 @@ class SiRNAModel:
     def load_trained_model(self, model_path, device_map="auto"):
         # Load tokenizer and model from saved path
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        # 왼쪽 패딩 설정 추가
-        self.tokenizer.padding_side = "left"  # 추가된 코드
+        self.tokenizer.padding_side = "left"
         
         self.model = AutoModelForCausalLM.from_pretrained(
             model_path,
