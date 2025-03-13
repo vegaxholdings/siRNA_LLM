@@ -6,9 +6,7 @@ import optuna
 from optuna.pruners import MedianPruner
 from optuna.samplers import TPESampler
 
-from model import SiRNAModel
-from data import SiRNADataset, calculate_mae
-from utils import set_seed, generate_predictions
+from utils import set_seed
 from train import train_model
 from evaluate import evaluate_model
 
